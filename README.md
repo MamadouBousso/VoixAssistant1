@@ -2,6 +2,14 @@
 
 Ce projet est une application web d'assistant IA, conçue comme une base robuste et évolutive pour des interactions complexes. Elle intègre des fonctionnalités avancées telles que la reconnaissance vocale, l'analyse de fichiers (images et PDF), et une architecture logicielle professionnelle.
 
+## Nouveauté : Blagues universelles (Dad Jokes)
+
+L'assistant est désormais capable de répondre à toute demande de blague ("raconte-moi une blague", "tell me a joke", etc.) en appelant automatiquement l'API externe [icanhazdadjoke.com](https://icanhazdadjoke.com/), quel que soit le fournisseur IA sélectionné (OpenAI, Claude, Gemini, etc.).
+
+- Si l'utilisateur demande une blague, l'assistant va chercher une "dad joke" et l'affiche instantanément.
+- Cette fonctionnalité fonctionne même si le provider IA ne supporte pas le function calling natif.
+- L'intégration est transparente pour l'utilisateur.
+
 ## Principes d'Architecture
 
 Le projet est construit sur une **architecture hexagonale (Ports & Adapters)**. Ce choix de conception vise à isoler la logique métier des détails d'infrastructure, offrant une flexibilité, une testabilité et une maintenabilité maximales.
@@ -20,6 +28,7 @@ Elle orchestre les cas d'utilisation de l'application.
 Elle fournit les implémentations concrètes des ports. C'est le "monde extérieur".
 -   **Adapters**: Chaque classe ici est un "adapter" qui implémente un port et le connecte à un outil spécifique. `OpenAIClient` est un adapter qui connecte le port `AIClient` à l'API d'OpenAI. `PyMuPDFProcessor` fait de même pour la lecture de PDF.
 -   **Factory (`ai_client_factory.py`)**: Utilise le patron de conception **Factory** pour créer et fournir le client IA demandé (OpenAI, Claude, etc.), en fonction de la configuration. Cela permet de changer de fournisseur d'IA sans modifier le code métier.
+-   **API externe** : Un module `joke_api.py` permet d'appeler l'API icanhazdadjoke.com pour obtenir une blague.
 
 ### 4. Le Point d'Entrée (`app.py`)
 C'est la couche la plus externe, qui gère les interactions avec l'utilisateur (ici, via le web avec Flask).
@@ -31,6 +40,7 @@ C'est la couche la plus externe, qui gère les interactions avec l'utilisateur (
 -   **Analyse Multi-modale** : Traitement de requêtes contenant du texte, des images et des fichiers PDF.
 -   **Choix Dynamique de Modèle** : L'utilisateur peut sélectionner son fournisseur d'IA (OpenAI, Claude, etc.) directement depuis l'interface.
 -   **Interaction Vocale** : Saisie des questions et lecture des réponses.
+-   **Blagues Universelles** : Si l'utilisateur demande une blague, l'assistant va chercher une "dad joke" via l'API icanhazdadjoke.com, quel que soit le provider IA sélectionné.
 
 ## Installation et Lancement
 
@@ -96,7 +106,8 @@ C'est la couche la plus externe, qui gère les interactions avec l'utilisateur (
 │       ├── claude_client.py     # Adapter (fictif) pour Claude
 │       ├── gemini_client.py     # Adapter (fictif) pour Gemini
 │       ├── openai_client.py     # Adapter pour OpenAI
-│       └── pdf_processor.py     # Adapter pour le traitement PDF
+│       ├── pdf_processor.py     # Adapter pour le traitement PDF
+│       └── joke_api.py         # Appel à l'API de blagues
 ├── static/
 ├── templates/
 └── README.md
