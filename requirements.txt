@@ -1,0 +1,6 @@
+Flask
+python-dotenv
+requests
+PyMuPDF
+anthropic
+google-generativeai 

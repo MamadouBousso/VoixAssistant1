@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant IA Vocal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Assistant IA</h2>
+        
+        <div id="chat-container" class="chat-container mb-4">
+            {% for message in chat_history %}
+                {% if message.role == 'user' %}
+                <div class="chat-bubble user-bubble">
+                    <p>{{ message.content }}</p>
+                </div>
+                {% elif message.role == 'assistant' %}
+                <div class="chat-bubble assistant-bubble">
+                    <p id="response-text-{{ loop.index }}">{{ message.content }}</p>
+                    <button class="speak-btn" data-target="response-text-{{ loop.index }}"><i class="fas fa-volume-up"></i></button>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if error_message %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong class="font-bold">Erreur :</strong>
+            <span class="block sm:inline">{{ error_message }}</span>
+        </div>
+        {% endif %}
+
+        <div id="file-preview-container" class="hidden mb-4 p-2 border rounded text-center">
+            <div id="image-preview-wrapper" class="hidden">
+                <img id="image-preview" src="#" alt="Aperçu de l'image" class="max-h-40 inline-block rounded"/>
+            </div>
+            <div id="pdf-preview-wrapper" class="hidden">
+                <i class="fas fa-file-pdf fa-2x text-red-500"></i>
+                <span id="pdf-name" class="ml-2"></span>
+            </div>
+            <button id="remove-file-btn" class="text-red-500 font-bold ml-2">&times;</button>
+        </div>
+
+        <div id="loading-indicator" class="hidden text-center my-4">
+            <div class="spinner"></div>
+            <p>En attente de la réponse...</p>
+        </div>
+
+        <form id="input-form" method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="ai-provider-select" class="block text-gray-700 text-sm font-bold mb-2">Choix du Modèle</label>
+                <select id="ai-provider-select" name="ai_provider" class="shadow border rounded w-full p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
+                    {% for provider in providers %}
+                        <option value="{{ provider }}" {% if provider == selected_provider %}selected{% endif %}>
+                            {{ provider.capitalize() }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <input type="file" id="file-input" name="file-input" class="hidden" accept="image/*,application/pdf">
+            <input type="hidden" id="file_data" name="file_data">
+            <div class="mb-4">
+                <label for="text_input" class="block text-gray-700 text-sm font-bold mb-2">Votre question</label>
+                <div class="relative flex items-center border border-slate-800 rounded">
+                    <input type="text" id="text_input" name="text_input" class="appearance-none p-2 text-gray-700 leading-tight focus:outline-none w-full" placeholder="Posez votre question..." value="{{ user_prompt or '' }}">
+                    <button type="button" id="attach-file-btn" class="px-3 text-gray-500">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button type="button" id="voice-input-btn" class="px-3 flex items-center text-gray-500">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                    Envoyer
+                </button>
+            </div>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
